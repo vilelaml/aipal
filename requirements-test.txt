@@ -3,4 +3,6 @@ pyyaml==6.0
 google-api-python-client
 atlassian-python-api
 flask
+numpy
+orjson
 coverage
