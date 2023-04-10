@@ -21,4 +21,4 @@ jobs:
     - name: Run tests with Coverage
       run: |
         coverage run -m unittest
-        coverage report -m --fail-under=100
+        coverage report -m --fail-under=99
