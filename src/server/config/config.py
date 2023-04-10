@@ -1,8 +1,7 @@
-from src.server.singleton import singleton
+from src.server.singleton import AbstractSingleton
 
 
-@singleton
-class Config:
+class Config(AbstractSingleton):
     def __init__(self):
         self.commands = {}
 

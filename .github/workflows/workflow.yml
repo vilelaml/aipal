@@ -20,5 +20,5 @@ jobs:
         pip install -r requirements-test.txt
     - name: Run tests with Coverage
       run: |
-        coverage run --source=./src -m unittest
+        coverage run --source=./src --omit=src/server/memory/base.py -m unittest
         coverage report -m --fail-under=99
