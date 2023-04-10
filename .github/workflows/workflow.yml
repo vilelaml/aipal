@@ -23,5 +23,5 @@ jobs:
         python -m unittest
     - name: Coverage
       run: |
-        coverage run test_runner.py
+        coverage run -m unittest
         coverage report -m --fail-under=99
