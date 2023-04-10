@@ -1,0 +1,6 @@
+openai==0.27.4
+pyyaml==6.0
+google-api-python-client
+atlassian-python-api
+flask
+coverage
