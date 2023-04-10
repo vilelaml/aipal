@@ -1,3 +1,4 @@
+import os.path
 import pickle
 
 from src.server.memory.base import BaseMemorySingleton
@@ -35,5 +36,6 @@ class LocalMemory(BaseMemorySingleton):
             pickle.dump(self.memories, f)
 
     def load(self):
-        with open(self.memory_file, "rb") as f:
-            self.memories = pickle.load(f)
+        if os.path.exists(self.memory_file):
+            with open(self.memory_file, "rb") as f:
+                self.memories = pickle.load(f)

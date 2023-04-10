@@ -83,6 +83,11 @@ class TestLocalMemory(unittest.TestCase):
         expected = [{"role": "user", "content": "this is a test"}]
         self.assertEqual(expected, self.memory.memories)
 
+    def test_load_when_file_doesnt_exist(self):
+        self.memory.load()
+        expected = []
+        self.assertEqual(expected, self.memory.memories)
+
     def test_add_user_input(self):
         self.memory.add_user_input("this is a test")
 
