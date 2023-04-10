@@ -28,4 +28,4 @@ class TestApp(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertIn('message', data)
-        self.assertEqual(data['message'], 'Hello, adelete_memories!')
+        self.assertEqual(data['message'], 'Hello, delete_memories!')
