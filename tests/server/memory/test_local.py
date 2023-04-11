@@ -84,6 +84,8 @@ class TestLocalMemory(unittest.TestCase):
         self.assertEqual(expected, self.memory.memories)
 
     def test_load_when_file_doesnt_exist(self):
+        with tempfile.NamedTemporaryFile("wb", delete=True) as f:
+            self.memory.memory_file = f.name
         self.memory.load()
         expected = []
         self.assertEqual(expected, self.memory.memories)
