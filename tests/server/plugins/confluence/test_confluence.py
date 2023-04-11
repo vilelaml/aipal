@@ -12,17 +12,12 @@ class TestConfluenceClient(TestCase):
         cls.search_term = "test"
         cls.page_id = 123
 
-        os.environ["ATLASSIAN_API_KEY"] = "api_token"
-        os.environ["CONFLUENCE_URL"] = "test.atlassian.net/wiki/"
-        os.environ["ATLASSIAN_USERNAME"] = "username"
-
         cls.confluence_client = ConfluenceClient()
+        cls.confluence_client.confluence_url = 'https://test.atlassian.net/wiki'
 
     @classmethod
     def tearDownClass(cls) -> None:
-        del os.environ["ATLASSIAN_API_KEY"]
-        del os.environ["CONFLUENCE_URL"]
-        del os.environ["ATLASSIAN_USERNAME"]
+        pass
 
     @mock.patch.object(Confluence, "cql")
     def test_confluence_search(self, mock_cql):
