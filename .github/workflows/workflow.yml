@@ -18,7 +18,11 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements-test.txt
-    - name: Run tests with Coverage
+    - name: Run server tests with Coverage
       run: |
-        coverage run --source=./src --omit=src/server/memory/base.py -m unittest
+        coverage run --source=./src/server --omit=src/server/memory/base.py -m unittest
         coverage report -m --fail-under=95
+    - name: Run client tests with Coverage
+      run: |
+        coverage run --source=./src/client -m unittest
+        coverage report -m --fail-under=60
