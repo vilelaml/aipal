@@ -1,10 +1,8 @@
 import unittest
 import json
-from unittest.mock import patch
 
 from src.server.app import app
 from src.server.config.config import Config
-from src.server.language_model.gpt_client import GptClient
 
 
 class TestApp(unittest.TestCase):
@@ -18,12 +16,14 @@ class TestApp(unittest.TestCase):
         del self.config
 
     def test_list_commands(self):
+        self.config.register_command('test', lambda: None)
+        self.config.register_command('test_2', lambda: None)
         response = self.client.get('/command')
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertIn('commands', data)
         self.assertIsInstance(data['commands'], list)
-        self.assertEqual(data['commands'], ['show_memories'])
+        self.assertEqual(data['commands'], ['test', 'test_2'])
 
     def test_process_command(self):
         def show_memories():

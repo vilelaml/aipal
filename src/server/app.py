@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify
 
 from src.server.command.command import Command
+from src.server.config.config import Config
 from src.server.config.load_commands import load_core_commands
-from src.server.language_model.gpt_client import GptClient
 from src.server.memory.local import LocalMemory
 
 app = Flask(__name__)
@@ -10,7 +10,8 @@ app = Flask(__name__)
 
 @app.route('/command', methods=['GET'])
 def list_commands():
-    return jsonify({'commands': ['show_memories']})
+    commands = Config().command_names
+    return jsonify({'commands': commands})
 
 
 @app.route('/command', methods=['POST'])
