@@ -1,0 +1,15 @@
+package: src.server.plugins.confluence.confluence
+class: ConfluenceClient
+commands:
+  - name: confluence_search
+    function: confluence_search
+    args:
+      - search_term
+  - name: confluence_read
+    function: confluence_read
+    args:
+      - page_id
+  - name: confluence_search_and_read_first
+    function: confluence_search_and_read_first
+    args:
+      - search_term
