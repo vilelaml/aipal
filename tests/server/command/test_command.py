@@ -1,5 +1,4 @@
 import unittest
-from unittest.mock import patch, MagicMock
 
 from src.server.command.command import Command
 from src.server.command.command_exception import CommandNotFoundException
@@ -40,4 +39,3 @@ class TestCommand(unittest.TestCase):
         with self.assertRaises(CommandNotFoundException) as e:
             self.assertEqual(self.command.execute(), 'test')
         self.assertIn("mytest couldn't be loaded. Please verify your configuration", e.exception.args)
-
