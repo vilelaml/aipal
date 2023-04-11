@@ -27,11 +27,16 @@ class TestCommand(unittest.TestCase):
 
     def test_execute(self):
         self.config.register_command('mytest', mytest)
-        self.command = Command('mytest', 'test')
+        self.command = Command('mytest', '{"text": "test"}')
         self.assertEqual(self.command.execute(), 'test')
 
-    def test_execute_invalid(self):
-        self.command = Command('mytest', 'test')
+    def test_execute_without_argument(self):
+        self.config.register_command('mytest', lambda: 'test')
+        self.command = Command('mytest')
+        self.assertEqual(self.command.execute(), 'test')
+
+    def test_execute_command_not_found(self):
+        self.command = Command('mytest', '{"text": "test"}')
         with self.assertRaises(CommandNotFoundException) as e:
             self.assertEqual(self.command.execute(), 'test')
         self.assertIn("mytest couldn't be loaded. Please verify your configuration", e.exception.args)

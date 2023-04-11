@@ -1,13 +1,13 @@
+import json
+
 from src.server.command.command_exception import CommandNotFoundException
 from src.server.config.config import Config
 
 
 class Command:
-    def __init__(self, command, args=None):
-        if args is None:
-            args = []
+    def __init__(self, command, args="{}"):
         self.command = command
-        self.args = args
+        self.args = json.loads(args)
         self.config = Config()
 
     def route(self):
@@ -17,5 +17,5 @@ class Command:
 
     def execute(self):
         command = self.route()
-        return command(self.args)
+        return command(**self.args)
 
