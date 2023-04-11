@@ -13,7 +13,7 @@ class TestConfluenceClient(TestCase):
         cls.page_id = 123
 
         os.environ["ATLASSIAN_API_KEY"] = "api_token"
-        os.environ["CONFLUENCE_URL"] = "confluence_url"
+        os.environ["CONFLUENCE_URL"] = "test.atlassian.net/wiki/"
         os.environ["ATLASSIAN_USERNAME"] = "username"
 
         cls.confluence_client = ConfluenceClient()
