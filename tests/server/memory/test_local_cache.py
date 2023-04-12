@@ -17,7 +17,7 @@ class TestLocalCache(unittest.TestCase):
         del self.cache
 
     @patch('src.server.memory.local_cache.get_ada_embedding', return_value=[1] * 1536)
-    def test_memories(self):
+    def test_memories(self, _):
         self.cache.add("test")
         self.assertEqual(self.cache.memories, ['test'])
 
@@ -65,7 +65,7 @@ class TestLocalCacheSaveAndLoad(unittest.TestCase):
             del LocalCache._instances[LocalCache]
 
     @patch('src.server.memory.local_cache.get_ada_embedding', return_value=[1] * 1536)
-    def test_save(self):
+    def test_save(self, _):
         mock_file = mock.mock_open()
         with mock.patch('builtins.open', mock_file):
             cache = LocalCache(file='test_memory.json', autosave=False)
