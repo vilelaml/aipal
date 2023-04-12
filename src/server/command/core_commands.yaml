@@ -1,0 +1,10 @@
+ai_clients:
+  - package: src.server.language_model.gpt_client
+    class: GptClient
+    commands:
+    - name: chat
+      function: chat
+      args:
+        - message
+    - name: summarise
+      function: summarise

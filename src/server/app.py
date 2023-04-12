@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 
 from src.server.command.command import Command
 from src.server.config.config import Config
-from src.server.memory.local import LocalMemory
+from src.server.memory import *
 
 app = Flask(__name__)
 
@@ -20,9 +20,6 @@ def process_command():
 
 
 if __name__ == '__main__':
-    memory = LocalMemory()
-    memory.load()
     config = Config()
-    config.load_core_commands()
-    config.load_plugins()
+    config.initialize()
     app.run(debug=True)

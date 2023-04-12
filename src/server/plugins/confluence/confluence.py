@@ -1,7 +1,8 @@
 import os
 from atlassian import Confluence
+from bs4 import BeautifulSoup
 
-from src.server.memory.local import LocalMemory
+from src.server.config.config import Config
 
 
 class ConfluenceClient:
@@ -11,7 +12,7 @@ class ConfluenceClient:
 
     @property
     def memory(self):
-        return LocalMemory()
+        return Config().memory
 
     @property
     def client(self):
@@ -24,7 +25,8 @@ class ConfluenceClient:
 
     def confluence_read(self, page_id):
         page_content = self.client.get_page_by_id(page_id, expand="body.storage")["body"]["storage"]["value"]
-        self.memory.add_user_input(page_content)
+        soup = BeautifulSoup(page_content, 'html.parser')
+        self.memory.add(soup.get_text())
         return 'Added page to my knowledge base'
 
     def confluence_search_and_read_first(self, search_term):
