@@ -13,32 +13,29 @@ class TestLocalMemory(unittest.TestCase):
         del self.memory
 
     def test_add_memory(self):
-        self.memory.add("user", "this is a test")
+        self.memory.add("this is a test")
 
-        expected = [{"role": "user", "content": "this is a test"}]
+        expected = ["this is a test"]
         self.assertEqual(expected, self.memory.memories)
 
     def test_add_memories(self):
-        self.memory.add("user", "this is a test")
-        self.memory.add("assistant", "ok")
+        self.memory.add("this is a test")
+        self.memory.add("ok")
 
-        expected = [
-            {"role": "user", "content": "this is a test"},
-            {"role": "assistant", "content": "ok"},
-        ]
+        expected = ["this is a test", "ok"]
         self.assertEqual(expected, self.memory.memories)
 
     def test_get(self):
-        self.memory.add("user", "this is a test")
-        expected_output = {'content': 'this is a test', 'role': 'user'}
+        self.memory.add("this is a test")
+        expected_output = 'this is a test'
         result = self.memory.get("test")
-        self.assertDictEqual(expected_output, result)
+        self.assertEqual(expected_output, result)
 
     def test_clear(self):
         with tempfile.NamedTemporaryFile("wb") as f:
             self.memory.memory_file = f.name
 
-        self.memory.add("user", "this is a test")
+        self.memory.add("this is a test")
         self.memory.clear()
 
         expected = []
@@ -46,41 +43,40 @@ class TestLocalMemory(unittest.TestCase):
         self.assertEqual("memory.pkl", self.memory.memory_file)
 
     def test_get_relevant(self):
-        self.memory.add("user", "this is a test")
-        self.memory.add("user", "this is another test")
-        self.memory.add("user", "not this one")
+        self.memory.add("this is a test")
+        self.memory.add("this is another test")
+        self.memory.add("not this one")
         result = self.memory.get_relevant("test")
-        expected_output = [{'content': 'this is a test', 'role': 'user'},
-                           {'content': 'this is another test', 'role': 'user'}]
+        expected_output = ['this is a test', 'this is another test']
         self.assertEqual(len(expected_output), len(result))
         for i in range(len(expected_output)):
-            self.assertDictEqual(expected_output[i], result[i])
+            self.assertEqual(expected_output[i], result[i])
 
     def test_get_stats(self):
-        self.memory.add("user", "this is a test")
-        self.memory.add("user", "this is another test")
+        self.memory.add("this is a test")
+        self.memory.add("this is another test")
         self.assertEqual(2, self.memory.get_stats())
 
     def test_save(self):
         with tempfile.NamedTemporaryFile("wb", delete=False) as f:
             self.memory.memory_file = f.name
-            self.memory.add("user", "this is a test")
+            self.memory.add("this is a test")
             self.memory.save()
 
         with open(self.memory.memory_file, "rb") as f:
             result = pickle.load(f)
 
-        expected = [{"role": "user", "content": "this is a test"}]
+        expected = ["this is a test"]
         self.assertEqual(expected, result)
 
     def test_load(self):
         with tempfile.NamedTemporaryFile("wb", delete=False) as f:
             self.memory.memory_file = f.name
-            self.memory.add("user", "this is a test")
+            self.memory.add("this is a test")
             self.memory.save()
 
         self.memory.load()
-        expected = [{"role": "user", "content": "this is a test"}]
+        expected = ["this is a test"]
         self.assertEqual(expected, self.memory.memories)
 
     def test_load_when_file_doesnt_exist(self):
@@ -88,12 +84,6 @@ class TestLocalMemory(unittest.TestCase):
             self.memory.memory_file = f.name
         self.memory.load()
         expected = []
-        self.assertEqual(expected, self.memory.memories)
-
-    def test_add_user_input(self):
-        self.memory.add_user_input("this is a test")
-
-        expected = [{"role": "user", "content": "this is a test"}]
         self.assertEqual(expected, self.memory.memories)
 
 
@@ -108,13 +98,13 @@ class TestLocalMemoryWithAutosave(unittest.TestCase):
     def test_add_memory(self):
         with tempfile.NamedTemporaryFile("wb", delete=False) as f:
             self.memory.memory_file = f.name
-            self.memory.add("user", "this is a test")
+            self.memory.add("this is a test")
 
-        expected = [{"role": "user", "content": "this is a test"}]
+        expected = ["this is a test"]
         self.assertEqual(expected, self.memory.memories)
 
         with open(self.memory.memory_file, "rb") as f:
             result = pickle.load(f)
 
-        expected = [{"role": "user", "content": "this is a test"}]
+        expected = ["this is a test"]
         self.assertEqual(expected, result)

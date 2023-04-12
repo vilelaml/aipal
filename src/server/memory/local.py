@@ -10,8 +10,8 @@ class LocalMemory(BaseMemorySingleton):
         self.autosave = autosave
         self.memories = []
 
-    def add(self, actor, data):
-        self.memories.append({"role": actor, "content": data})
+    def add(self, data: str):
+        self.memories.append(data)
         if self.autosave:
             self.save()
 
@@ -22,14 +22,11 @@ class LocalMemory(BaseMemorySingleton):
         self.memory_file = "memory.pkl"
         self.memories = []
 
-    def get_relevant(self, input_str, num_relevant=5):
-        return [memory for memory in self.memories if input_str in memory['content']]
+    def get_relevant(self, data: str, num_relevant: int = 5):
+        return [memory for memory in self.memories if data in memory]
 
     def get_stats(self):
         return len(self.memories)
-
-    def add_user_input(self, data):
-        self.add("user", data)
 
     def save(self):
         with open(self.memory_file, "wb") as f:

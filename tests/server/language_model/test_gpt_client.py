@@ -1,4 +1,5 @@
 import unittest
+from unittest import mock
 from unittest.mock import MagicMock, patch
 import openai
 from src.server.memory.local import LocalMemory
@@ -8,7 +9,9 @@ from src.server.language_model.gpt_client import GptClient
 class TestGptClient(unittest.TestCase):
     def setUp(self) -> None:
         self.memory = LocalMemory(autosave=False)
-        self.client = GptClient()
+        with mock.patch('src.server.config.config.Config.memory'):
+            self.client = GptClient()
+        self.client.memory = LocalMemory()
 
     def tearDown(self) -> None:
         del LocalMemory._instances[LocalMemory]
@@ -23,13 +26,13 @@ class TestGptClient(unittest.TestCase):
 
         result = self.client.chat(message)
 
-        mock_create.assert_called_once_with(model=self.client.MODEL, messages=self.client.memory.memories)
+        full_message = {'role': 'user', 'content': message}
+        mock_create.assert_called_once_with(model=self.client.MODEL, messages=[full_message])
         self.assertEqual(result, "I'm good, thanks!")
-        self.assertDictEqual(self.client.memory.get("good"), {'role': 'assistant', 'content': "I'm good, thanks!"})
 
     @patch.object(openai.ChatCompletion, 'create')
     def test_summarise(self, mock_create):
-        messages = [{'role': 'user', 'content': 'Could you summarise our conversation?'}]
+        messages = ['Could you summarise our conversation?']
         mock_response = MagicMock()
         mock_response.choices = [MagicMock(message=MagicMock(content="We talked about various topics."))]
         mock_create.return_value = mock_response
@@ -38,4 +41,4 @@ class TestGptClient(unittest.TestCase):
 
         mock_create.assert_called_once_with(model=self.client.MODEL, messages=messages)
         self.assertEqual(len(self.client.memory.memories), 1)
-        self.assertDictEqual(self.client.memory.get(""), {'role': 'assistant', 'content': 'We talked about various topics.'})
+        self.assertEqual(self.client.memory.get(""), 'We talked about various topics.')

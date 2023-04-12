@@ -2,17 +2,34 @@ import importlib
 
 import yaml
 
-from src.server.command.core_commands import CORE_COMMANDS
 from src.server.singleton import AbstractSingleton
+from src.server.memory import *
 
 
 class Config(AbstractSingleton):
-    def __init__(self):
+    def __init__(self, config_file='aipal.yaml'):
+        self.config_file = config_file
         self.commands = {}
 
     @property
     def command_names(self):
         return list(self.commands.keys())
+
+    @property
+    def config_yaml(self):
+        with open(self.config_file, "r") as f:
+            return yaml.safe_load(f)
+
+    @property
+    def memory(self):
+        memory_class = self.config_yaml['memory']['class']
+        memory_file = self.config_yaml['memory']['file_name']
+        return globals()[memory_class](memory_file)
+
+    def initialize(self):
+        self.load_core_commands()
+        self.load_plugins()
+        self.memory.load()
 
     def register_command(self, command, function):
         if command in self.commands:
@@ -20,14 +37,19 @@ class Config(AbstractSingleton):
         self.commands[command] = function
 
     def load_core_commands(self):
-        for command, action in CORE_COMMANDS.items():
-            self.register_command(command, action)
+        with open('command/core_commands.yaml', "r") as f:
+            core_commands = yaml.safe_load(f)
 
-    def load_plugins(self, config_file='aipal.yaml'):
-        with open(config_file, "r") as f:
-            yaml_data = yaml.safe_load(f)
-        base_path = yaml_data['plugin']['base_path']
-        for plugin in yaml_data['plugin']['plugins']:
+        for ai_client in core_commands['ai_clients']:
+            plugin_module = importlib.import_module(ai_client["package"])
+            plugin_class = ai_client["class"]
+            for command in ai_client["commands"]:
+                plugin_object = getattr(plugin_module, plugin_class)()
+                self.register_command(command["name"], getattr(plugin_object, command["function"]))
+
+    def load_plugins(self, ):
+        base_path = self.config_yaml['plugin']['base_path']
+        for plugin in self.config_yaml['plugin']['plugins']:
             plugin_path = f"{base_path}/{plugin}/config.yaml"
             self.load_plugin_commands(plugin_path)
 

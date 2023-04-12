@@ -2,3 +2,4 @@
 /venv/
 /.idea/
 *.pkl
+memory.json

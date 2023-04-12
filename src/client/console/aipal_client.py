@@ -3,6 +3,8 @@ import requests
 
 from src.client.console.prompt import Prompt
 
+AI_PAL_URL = 'http://127.0.0.1:5000/command'
+
 
 def command_parser(user_input):
     if user_input == "/exit":
@@ -23,12 +25,12 @@ def command_parser(user_input):
 
 
 def execute(command_with_args):
-    result = requests.post('http://127.0.0.1:5000/command', data=command_with_args)
+    result = requests.post(AI_PAL_URL, data=command_with_args)
     return result
 
 
 def show_commands():
-    result = requests.get('http://127.0.0.1:5000/command')
+    result = requests.get(AI_PAL_URL)
     return result.json()['commands']
 
 

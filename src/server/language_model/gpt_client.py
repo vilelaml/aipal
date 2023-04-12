@@ -1,26 +1,30 @@
 import openai
-from src.server.memory.local import LocalMemory
+
+from src.server.config.config import Config
 
 
 class GptClient:
     MODEL = "gpt-3.5-turbo"
-    ASSISTANT_ROLE = "assistant"
-    USER_ROLE = "user"
 
     def __init__(self):
-        self.memory = LocalMemory()
+        self.memory = Config().memory
 
     def chat(self, message):
-        self.memory.add_user_input(message)
-        response = openai.ChatCompletion.create(model=self.MODEL, messages=self.memory.memories)
+        messages = [self._prepare_message(m) for m in self.memory.get_relevant(message)]
+        self.memory.add(message)
+        messages.append(self._prepare_message(message))
+        response = openai.ChatCompletion.create(model=self.MODEL, messages=messages)
         content = response.choices[0].message.content
-        self.memory.add(self.ASSISTANT_ROLE, content)
+        self.memory.add(content)
         return content
 
     def summarise(self):
         question = "Could you summarise our conversation?"
-        self.memory.add(self.USER_ROLE, question)
+        self.memory.add(question)
         response = openai.ChatCompletion.create(model=self.MODEL, messages=self.memory.memories)
         content = response.choices[0].message.content
         self.memory.clear()
-        self.memory.add(self.ASSISTANT_ROLE, content)
+        self.memory.add(content)
+
+    def _prepare_message(self, message: str) -> dict[str, str]:
+        return {"role": "user", "content": message}
