@@ -2,7 +2,6 @@ from flask import Flask, request, jsonify
 
 from src.server.command.command import Command
 from src.server.config.config import Config
-from src.server.config.load_commands import load_core_commands, load_plugin_commands
 from src.server.memory.local import LocalMemory
 
 app = Flask(__name__)
@@ -23,6 +22,7 @@ def process_command():
 if __name__ == '__main__':
     memory = LocalMemory()
     memory.load()
-    load_core_commands()
-    load_plugin_commands('plugins/confluence/config.yaml')
+    config = Config()
+    config.load_core_commands()
+    config.load_plugins()
     app.run(debug=True)
