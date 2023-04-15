@@ -2,7 +2,6 @@ import os
 from atlassian import Confluence
 from bs4 import BeautifulSoup
 
-from src.server.config.config import Config
 from src.server.plugins.base import PluginBase
 
 

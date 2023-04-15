@@ -1,5 +1,22 @@
+import requests
+from urllib.parse import urlparse
+
+from bs4 import BeautifulSoup
+
 from src.server.plugins.base import PluginBase
 
 
 class WebBrowse(PluginBase):
-    pass
+    def is_valid_url(self, url) -> bool:
+        try:
+            result = urlparse(url)
+            return all([result.scheme, result.netloc])
+        except ValueError:
+            return False
+
+    def read(self, url):
+        if self.is_valid_url(url):
+            response = requests.get(url)
+            soup = BeautifulSoup(response.content, 'html.parser')
+            self.memory.add(soup.get_text())
+            return 'Added page to my knowledge base'
