@@ -43,11 +43,14 @@ class TestLocalMemory(unittest.TestCase):
         self.assertEqual("memory.pkl", self.memory.memory_file)
 
     def test_get_relevant(self):
-        self.memory.add("this is a test")
-        self.memory.add("this is another test")
-        self.memory.add("not this one")
-        result = self.memory.get_relevant("test")
-        expected_output = ['this is a test', 'this is another test']
+        self.memory.add("test 1")
+        self.memory.add("test 2")
+        self.memory.add("test 3")
+        self.memory.add("test 4")
+        self.memory.add("test 5")
+        self.memory.add("test 6")
+        result = self.memory.get_relevant("anything")
+        expected_output = ["test 2", "test 3", "test 4", "test 5", "test 6"]
         self.assertEqual(len(expected_output), len(result))
         for i in range(len(expected_output)):
             self.assertEqual(expected_output[i], result[i])

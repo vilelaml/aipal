@@ -1,6 +1,6 @@
 memory:
-  class: LocalCache
-  file_name: memory.json
+  class: LocalMemory
+  file_name: memory.pkl
 plugin:
   base_path: plugins
   plugins:
