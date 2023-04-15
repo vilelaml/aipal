@@ -23,7 +23,7 @@ class LocalMemory(BaseMemorySingleton):
         self.memories = []
 
     def get_relevant(self, data: str, num_relevant: int = 5):
-        return [memory for memory in self.memories if data in memory]
+        return self.memories[-5:]
 
     def get_stats(self):
         return len(self.memories)
