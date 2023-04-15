@@ -3,16 +3,13 @@ from atlassian import Confluence
 from bs4 import BeautifulSoup
 
 from src.server.config.config import Config
+from src.server.plugins.base import PluginBase
 
 
-class ConfluenceClient:
+class ConfluenceClient(PluginBase):
     api_token = os.getenv("ATLASSIAN_API_KEY")
     confluence_url = os.getenv("CONFLUENCE_URL")
     username = os.getenv("ATLASSIAN_USERNAME")
-
-    @property
-    def memory(self):
-        return Config().memory
 
     @property
     def client(self):
