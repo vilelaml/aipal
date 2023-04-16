@@ -2,7 +2,7 @@ import unittest
 from unittest import mock
 from unittest.mock import PropertyMock
 
-from src.server.plugins.browse.web_browse import WebBrowse
+from src.server.plugins.web.web_browse import WebBrowse
 
 
 class TestWebBrowse(unittest.TestCase):
@@ -22,7 +22,7 @@ class TestWebBrowse(unittest.TestCase):
     @mock.patch("requests.get")
     def test_read(self, mock_read):
         mock_read.return_value.content = "test page content"
-        with mock.patch("src.server.plugins.browse.web_browse.WebBrowse.memory",
+        with mock.patch("src.server.plugins.web.web_browse.WebBrowse.memory",
                         new_callable=PropertyMock()) as mock_memory:
             result = self.web_browse.read("https://github.com/vilelaml/aipal")
             self.assertEqual(result, "Added page to my knowledge base")
