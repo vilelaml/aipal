@@ -8,11 +8,8 @@ from src.server.plugins.base import PluginBase
 
 class WebBrowse(PluginBase):
     def is_valid_url(self, url) -> bool:
-        try:
-            result = urlparse(url)
-            return all([result.scheme, result.netloc])
-        except ValueError:
-            return False
+        result = urlparse(url)
+        return all([result.scheme, result.netloc])
 
     def read(self, url):
         if self.is_valid_url(url):

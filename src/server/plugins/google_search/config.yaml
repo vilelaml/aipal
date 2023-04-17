@@ -1,0 +1,7 @@
+package: src.server.plugins.google_search.google_web_search
+class: GoogleWebSearch
+commands:
+  - name: google_search
+    function: search
+    args:
+      - query

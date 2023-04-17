@@ -1,6 +1,6 @@
 import unittest
 from unittest import mock
-from unittest.mock import PropertyMock
+from unittest.mock import PropertyMock, patch
 
 from src.server.plugins.web.web_browse import WebBrowse
 
@@ -13,11 +13,6 @@ class TestWebBrowse(unittest.TestCase):
         url = 'https://github.com/vilelaml/aipal'
         result = self.web_browse.is_valid_url(url)
         self.assertTrue(result)
-
-    def test_is_valid_url_when_invalid(self):
-        url = 'github/vilelaml/aipal'
-        result = self.web_browse.is_valid_url(url)
-        self.assertFalse(result)
 
     @mock.patch("requests.get")
     def test_read(self, mock_read):

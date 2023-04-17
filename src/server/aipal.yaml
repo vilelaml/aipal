@@ -6,3 +6,4 @@ plugin:
   plugins:
     - confluence
     - web
+    - google_search
