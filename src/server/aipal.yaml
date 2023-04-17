@@ -5,4 +5,5 @@ plugin:
   base_path: plugins
   plugins:
     - confluence
-    - browse
+    - web
+    - google_search
