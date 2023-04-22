@@ -2,6 +2,7 @@ import unittest
 from unittest import mock
 
 from src.server.agent.agent import Agent
+from src.server.agent.agent_exception import AgentNotFoundException
 
 
 class TestAgent(unittest.TestCase):
@@ -25,6 +26,10 @@ class TestAgent(unittest.TestCase):
         expected = {"name": "test", "goal": "be the first test"}
         result = self.agent.get("test")
         self.assertEqual(expected, result)
+
+    def test_get_agent_when_not_found(self):
+        with self.assertRaises(AgentNotFoundException):
+            self.agent.get("test3")
 
     def test_add_agent(self):
         self.agent.add(name="test3", goal="third agent")

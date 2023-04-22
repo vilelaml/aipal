@@ -1,0 +1,2 @@
+class AgentNotFoundException(Exception):
+    pass

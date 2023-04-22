@@ -1,5 +1,7 @@
 import yaml
 
+from src.server.agent.agent_exception import AgentNotFoundException
+
 
 class Agent:
     def __init__(self, agents_file='agents.yaml'):
@@ -18,6 +20,9 @@ class Agent:
         return [agent["name"] for agent in self.agents]
 
     def get(self, name):
+        agents = [d for d in self.agents if d['name'] == name]
+        if len(agents) == 0:
+            raise AgentNotFoundException(f"{name} agent not found")
         return [d for d in self.agents if d['name'] == name][0]
 
     def add(self, name, goal) -> None:
