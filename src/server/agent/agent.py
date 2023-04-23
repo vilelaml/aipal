@@ -1,37 +1,34 @@
-import yaml
-
-from src.server.agent.agent_exception import AgentNotFoundException
+from src.server.utils.yaml_datastore import YamlDatastore
 
 
 class Agent:
-    def __init__(self, agents_file='agents.yaml'):
-        self.agents_file = agents_file
-        self.agents = []
+    AGENTS_FILE_PATH = 'agents.yaml'
+    datastore = YamlDatastore(AGENTS_FILE_PATH)
 
-    def load(self) -> None:
-        with open(self.agents_file, 'r') as f:
-            self.agents = yaml.safe_load(f)
+    def __init__(self, id: int = None, name: str = None, goal: str = None, memory_file: str = None):
+        self.id = id
+        self.name = name
+        self.goal = goal
+        self.memory_file = memory_file or name
 
-    def save(self) -> None:
-        with open(self.agents_file, 'w') as f:
-            yaml.dump(self.agents, f)
+    @classmethod
+    def get(cls, record_id):
+        record = cls.datastore.get_record_by_id('Agent', record_id)
+        del record["type"]
+        return cls(**record)
 
-    def list(self) -> list[str]:
-        return [agent["name"] for agent in self.agents]
+    def save(self):
+        if not hasattr(self, "id") or self.id is None:
+            self.id = self.datastore.get_next_id()
+        self.datastore.create_record(str(self.id),
+                                     {"type": "Agent", "id": self.id, "name": self.name, "goal": self.goal})
 
-    def get(self, name):
-        agents = [d for d in self.agents if d['name'] == name]
-        if len(agents) == 0:
-            raise AgentNotFoundException(f"{name} agent not found")
-        return [d for d in self.agents if d['name'] == name][0]
+    def update(self):
+        self.datastore.update_record(str(self.id),
+                                     {"type": "Agent", "id": self.id, "name": self.name, "goal": self.goal})
 
-    def add(self, name, goal) -> None:
-        new_agent = {"name": name, "goal": goal}
-        self.agents.append(new_agent)
+    def delete(self):
+        self.datastore.delete_record(str(self.id))
 
-    def delete(self, name) -> bool:
-        for idx, agent in enumerate(self.agents):
-            if agent['name'] == name:
-                self.agents.pop(idx)
-                return True
-        return False
+    def __str__(self):
+        return f"{self.id} - {self.name}: {self.goal} ({self.memory_file})"

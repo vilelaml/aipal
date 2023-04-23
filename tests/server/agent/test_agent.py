@@ -1,52 +1,57 @@
+import os
 import unittest
-from unittest import mock
+from tempfile import NamedTemporaryFile
+from unittest.mock import patch
 
 from src.server.agent.agent import Agent
-from src.server.agent.agent_exception import AgentNotFoundException
+from src.server.utils.yaml_datastore import YamlDatastore
 
 
 class TestAgent(unittest.TestCase):
-    def setUp(self) -> None:
-        mock_agent_config = """
-                - name: test
-                  goal: be the first test
-                - name: test2
-                  goal: be the second test
-                """
-        with mock.patch("builtins.open", mock.mock_open(read_data=mock_agent_config)):
-            self.agent = Agent()
-            self.agent.load()
+    def setUp(self):
+        self.temp_file = NamedTemporaryFile(delete=False)
+        datastore = YamlDatastore(self.temp_file.name)
+        self.ds_patcher = patch.object(Agent, 'datastore', datastore)
+        self.ds_patcher.start()
 
-    def test_list_agents(self):
-        expected = ['test', 'test2']
-        result = self.agent.list()
-        self.assertEqual(expected, result)
+        self.agent1 = Agent(name="Alice", goal="Win the race")
+        self.agent2 = Agent(name="Bob", goal="Complete the project")
 
-    def test_get_agent(self):
-        expected = {"name": "test", "goal": "be the first test"}
-        result = self.agent.get("test")
-        self.assertEqual(expected, result)
+    def tearDown(self):
+        self.ds_patcher.stop()
+        self.temp_file.close()
+        if os.path.exists(self.temp_file.name):
+            os.remove(self.temp_file.name)
 
-    def test_get_agent_when_not_found(self):
-        with self.assertRaises(AgentNotFoundException):
-            self.agent.get("test3")
+    def test_save(self):
+        self.agent1.save()
+        self.agent2.save()
+        datastore = YamlDatastore(self.temp_file.name)
+        self.assertEqual(len(datastore.data), 2)
 
-    def test_add_agent(self):
-        self.agent.add(name="test3", goal="third agent")
-        expected = ['test', 'test2', 'test3']
-        result = self.agent.list()
-        self.assertEqual(expected, result)
+    def test_get(self):
+        self.agent1.save()
+        self.agent2.save()
+        agent = Agent.get(2)
+        self.assertEqual(agent.name, "Bob")
+        self.assertEqual(agent.goal, "Complete the project")
 
-    def test_delete_agent(self):
-        result = self.agent.delete(name="test2")
-        expected = ['test']
-        agents = self.agent.list()
-        self.assertTrue(result)
-        self.assertEqual(expected, agents)
+    def test_update(self):
+        self.agent1.save()
+        self.agent1.goal = "Finish the race"
+        self.agent1.update()
+        agent = Agent.get(1)
+        self.assertEqual(agent.goal, "Finish the race")
 
-    def test_delete_agent_not_found(self):
-        result = self.agent.delete(name="not_found")
-        expected = ['test', 'test2']
-        agents = self.agent.list()
-        self.assertFalse(result)
-        self.assertEqual(expected, agents)
+    def test_delete(self):
+        self.agent1.save()
+        self.agent2.save()
+        self.agent2.delete()
+        datastore = YamlDatastore(self.temp_file.name)
+        self.assertEqual(len(datastore.data), 1)
+        with self.assertRaises(KeyError):
+            Agent.get(2)
+
+    def test___str__(self):
+        self.agent1.save()
+        self.assertEqual("1 - Alice: Win the race (Alice)", self.agent1.__str__())
