@@ -1,6 +1,6 @@
 import os
 import unittest
-from tempfile import NamedTemporaryFile
+from tempfile import NamedTemporaryFile, TemporaryDirectory
 from unittest.mock import patch
 
 from src.server.agent.agent import Agent
@@ -9,24 +9,27 @@ from src.server.utils.yaml_datastore import YamlDatastore
 
 class TestAgent(unittest.TestCase):
     def setUp(self):
-        self.temp_file = NamedTemporaryFile(delete=False)
-        datastore = YamlDatastore(self.temp_file.name)
-        self.ds_patcher = patch.object(Agent, 'datastore', datastore)
-        self.ds_patcher.start()
+        self.temp_dir = TemporaryDirectory()
+        self.file_name = f'{self.temp_dir.name}/Agent.yaml'
+        datastore = YamlDatastore(self.file_name)
+        self.file_patcher = patch.object(Agent, 'BASE_PATH', self.temp_dir.name)
+        self.file_patcher.start()
 
         self.agent1 = Agent(name="Alice", goal="Win the race")
         self.agent2 = Agent(name="Bob", goal="Complete the project")
+        self.agent1.datastore = datastore
+        self.agent2.datastore = datastore
 
     def tearDown(self):
-        self.ds_patcher.stop()
-        self.temp_file.close()
-        if os.path.exists(self.temp_file.name):
-            os.remove(self.temp_file.name)
+        self.file_patcher.stop()
+        if os.path.exists(self.file_name):
+            os.remove(self.file_name)
+            os.rmdir(self.temp_dir.name)
 
     def test_save(self):
         self.agent1.save()
         self.agent2.save()
-        datastore = YamlDatastore(self.temp_file.name)
+        datastore = YamlDatastore(self.file_name)
         self.assertEqual(len(datastore.data), 2)
 
     def test_get(self):
@@ -47,7 +50,7 @@ class TestAgent(unittest.TestCase):
         self.agent1.save()
         self.agent2.save()
         self.agent2.delete()
-        datastore = YamlDatastore(self.temp_file.name)
+        datastore = YamlDatastore(self.file_name)
         self.assertEqual(len(datastore.data), 1)
         with self.assertRaises(KeyError):
             Agent.get(2)

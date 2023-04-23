@@ -1,5 +1,4 @@
 import yaml
-import os.path
 from typing import Dict
 
 
@@ -14,6 +13,9 @@ class YamlDatastore:
                 return yaml.safe_load(f) or {}
         except FileNotFoundError:
             return {}
+
+    def reload(self):
+        self.data = self.load_data()
 
     def save_data(self):
         with open(self.file_path, 'w') as f:
