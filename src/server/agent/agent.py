@@ -17,18 +17,18 @@ class Agent:
         del record["type"]
         return cls(**record)
 
-    def save(self):
+    def save(self) -> None:
         if not hasattr(self, "id") or self.id is None:
             self.id = self.datastore.get_next_id()
         self.datastore.create_record(str(self.id),
                                      {"type": "Agent", "id": self.id, "name": self.name, "goal": self.goal})
 
-    def update(self):
+    def update(self) -> None:
         self.datastore.update_record(str(self.id),
                                      {"type": "Agent", "id": self.id, "name": self.name, "goal": self.goal})
 
-    def delete(self):
+    def delete(self) -> None:
         self.datastore.delete_record(str(self.id))
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.id} - {self.name}: {self.goal} ({self.memory_file})"
