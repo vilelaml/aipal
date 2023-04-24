@@ -28,10 +28,6 @@ class Config(AbstractSingleton):
         memory_file = self.config_yaml['memory']['file_name']
         return globals()[memory_class](memory_file)
 
-    @property
-    def agent(self) -> Agent:
-        return Agent()
-
     def initialize(self) -> None:
         self.load_core_commands()
         self.load_plugins()
@@ -68,13 +64,13 @@ class Config(AbstractSingleton):
             plugin_object = getattr(plugin_module, plugin_class)()
             self.register_command(command["name"], getattr(plugin_object, command["function"]))
 
-    def activate_agent(self, agent_name) -> None:
-        self.active_agents.append(self.agent.get(agent_name))
+    def activate_agent(self, agent_id: int) -> None:
+        self.active_agents.append(Agent.get(agent_id))
 
-    def deactivate_agent(self, agent_name) -> None:
-        for idx, agent in enumerate(self.list_active_agents()):
-            if agent == agent_name:
+    def deactivate_agent(self, agent_id) -> None:
+        for idx, (id, name) in enumerate(self.list_active_agents().items()):
+            if id == agent_id:
                 self.active_agents.pop(idx)
 
-    def list_active_agents(self) -> list[str]:
-        return [agent["name"] for agent in self.active_agents]
+    def list_active_agents(self) -> dict[int, str]:
+        return {agent.id: agent.name for agent in self.active_agents}

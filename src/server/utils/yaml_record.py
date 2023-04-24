@@ -9,6 +9,11 @@ class YamlRecord:
         self.datastore = YamlDatastore(f'{self.BASE_PATH}/{type(self).__name__}.yaml')
 
     @classmethod
+    def list(cls):
+        datastore = YamlDatastore(f'{cls.BASE_PATH}/{cls.__name__}.yaml')
+        return datastore.data
+
+    @classmethod
     def get(cls, record_id):
         datastore = YamlDatastore(f'{cls.BASE_PATH}/{cls.__name__}.yaml')
         record = datastore.get_record_by_id(cls.__name__, record_id)

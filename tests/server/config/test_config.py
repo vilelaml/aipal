@@ -1,7 +1,7 @@
 import unittest
 from unittest import mock
-from unittest.mock import patch, PropertyMock
 
+from src.server.agent.agent import Agent
 from src.server.config.config import Config
 
 
@@ -71,30 +71,28 @@ class TestConfig(unittest.TestCase):
         self.assertIn('confluence_search', self.config.commands)
 
     def test_list_active_agents(self):
-        self.config.active_agents = [{"name": "test", "goal": "first goal"}]
-        expected = ["test"]
+        self.config.active_agents = [Agent(id=1, name="test", goal="first goal")]
+        expected = {1: "test"}
         result = self.config.list_active_agents()
         self.assertEqual(expected, result)
 
     def test_list_active_agents_when_no_agents(self):
         self.config.active_agents = []
-        expected = []
+        expected = {}
         result = self.config.list_active_agents()
         self.assertEqual(expected, result)
 
     def test_activate_agent(self):
         self.config.active_agents = []
-        expected = [{"name": "test", "goal": "first goal"}]
-        with mock.patch("src.server.config.config.Config.agent",
-                        new_callable=PropertyMock()) as mock_agent:
-            mock_agent.get.return_value = {"name": "test", "goal": "first goal"}
-            self.config.activate_agent("test")
+        expected = [Agent(id=1, name="test")]
+        with mock.patch.object(Agent, 'get', return_value=Agent(id=1, name="test")):
+            self.config.activate_agent(1)
         result = self.config.active_agents
         self.assertEqual(expected, result)
 
     def test_deactivate_agent(self):
-        self.config.active_agents = [{"name": "test", "goal": "first goal"}]
+        self.config.active_agents = [Agent(id=1, name="test", goal="first goal")]
         expected = []
-        self.config.deactivate_agent("test")
+        self.config.deactivate_agent(1)
         result = self.config.active_agents
         self.assertEqual(expected, result)
