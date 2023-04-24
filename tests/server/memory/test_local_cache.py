@@ -13,7 +13,6 @@ class TestLocalCache(unittest.TestCase):
         self.cache.load()
 
     def tearDown(self) -> None:
-        del LocalCache._instances[LocalCache]
         del self.cache
 
     @patch('src.server.memory.local_cache.get_ada_embedding', return_value=[1] * 1536)
@@ -60,10 +59,6 @@ class TestLocalCache(unittest.TestCase):
 
 
 class TestLocalCacheSaveAndLoad(unittest.TestCase):
-    def setUp(self) -> None:
-        if LocalCache in LocalCache._instances:
-            del LocalCache._instances[LocalCache]
-
     @patch('src.server.memory.local_cache.get_ada_embedding', return_value=[1] * 1536)
     def test_save(self, _):
         mock_file = mock.mock_open()

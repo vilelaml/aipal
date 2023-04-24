@@ -14,7 +14,6 @@ class TestGptClient(unittest.TestCase):
         self.client.memory = LocalMemory()
 
     def tearDown(self) -> None:
-        del LocalMemory._instances[LocalMemory]
         del self.memory
 
     @patch.object(openai.ChatCompletion, 'create')

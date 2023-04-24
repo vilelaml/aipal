@@ -22,7 +22,7 @@ class TestYamlRecord(unittest.TestCase):
         self.ds_patcher.stop()
         if os.path.exists(self.file_name):
             os.remove(self.file_name)
-            os.rmdir(self.temp_dir.name)
+            self.temp_dir.cleanup()
 
     def test_save(self):
         self.record1.save()
@@ -38,7 +38,7 @@ class TestYamlRecord(unittest.TestCase):
 
     def test_update(self):
         class YamlWithAttr(YamlRecord):
-            def __init__(self, id = None, new_attr = None):
+            def __init__(self, id=None, new_attr=None):
                 super().__init__(id)
                 self.new_attr = new_attr
 

@@ -1,8 +1,5 @@
 import abc
 import openai
-import yaml
-
-from src.server.singleton import AbstractSingleton
 
 
 def get_ada_embedding(text):
@@ -10,7 +7,7 @@ def get_ada_embedding(text):
     return openai.Embedding.create(input=[text], model="text-embedding-ada-002")["data"][0]["embedding"]
 
 
-class BaseMemorySingleton(AbstractSingleton):
+class BaseMemorySingleton:
     @abc.abstractmethod
     def add(self, data: str):
         pass

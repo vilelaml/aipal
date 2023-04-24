@@ -9,7 +9,6 @@ class TestLocalMemory(unittest.TestCase):
         self.memory = LocalMemory(autosave=False)
 
     def tearDown(self) -> None:
-        del LocalMemory._instances[LocalMemory]
         del self.memory
 
     def test_add_memory(self):
@@ -95,7 +94,6 @@ class TestLocalMemoryWithAutosave(unittest.TestCase):
         self.memory = LocalMemory()
 
     def tearDown(self) -> None:
-        del LocalMemory._instances[LocalMemory]
         del self.memory
 
     def test_add_memory(self):
