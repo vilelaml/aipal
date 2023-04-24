@@ -17,7 +17,12 @@ ai_clients:
       function: list_active_agents
     - name: activate_agent
       function: activate_agent
-      args: agent
+      args: agent_id
     - name: deactivate_agent
       function: deactivate_agent
-      args: agent
+      args: agent_id
+    - name: create_agent
+      function: create_agent
+      args:
+        - name
+        - goal

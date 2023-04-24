@@ -58,3 +58,9 @@ class TestAgentActivation(unittest.TestCase):
         expected = {1: 'Alice'}
         result = self.agent_activation.list_active_agents()
         self.assertEqual(expected, result)
+
+    def test_create_agent(self):
+        expected = {1: 'Alice', 2: 'Bob', 3: 'Mel'}
+        self.agent_activation.create_agent(name="Mel", goal="test")
+        result = self.agent_activation.list_agents()
+        self.assertEqual(expected, result)
