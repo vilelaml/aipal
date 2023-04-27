@@ -3,6 +3,7 @@ from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 
+from src.server.config.config import Config
 from src.server.plugins.base import PluginBase
 
 
@@ -15,5 +16,7 @@ class WebBrowse(PluginBase):
         if self.is_valid_url(url):
             response = requests.get(url)
             soup = BeautifulSoup(response.content, 'html.parser')
-            self.memory.add(soup.get_text())
+            web_text = soup.get_text()
+            for agent in Config().active_agents:
+                agent.memory.add(web_text)
             return 'Added page to my knowledge base'

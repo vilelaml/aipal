@@ -19,8 +19,9 @@ class LocalMemory(BaseMemorySingleton):
         return self.get_relevant(data, 1)[0]
 
     def clear(self):
-        self.memory_file = "memory.pkl"
         self.memories = []
+        if self.autosave:
+            self.save()
 
     def get_relevant(self, data: str, num_relevant: int = 5):
         return self.memories[-5:]
@@ -35,4 +36,7 @@ class LocalMemory(BaseMemorySingleton):
     def load(self):
         if os.path.exists(self.memory_file):
             with open(self.memory_file, "rb") as f:
-                self.memories = pickle.load(f)
+                try:
+                    self.memories = pickle.load(f)
+                except EOFError:
+                    self.memories = []

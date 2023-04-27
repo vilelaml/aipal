@@ -25,7 +25,7 @@ class LocalCache(BaseMemorySingleton):
     def __init__(self, file="memory.json", autosave=True) -> None:
         self.memory_file = file
         self.autosave = autosave
-        self.data = []
+        self.data = CacheContent()
 
     @property
     def memories(self):

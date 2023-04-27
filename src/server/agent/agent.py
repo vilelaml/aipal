@@ -1,3 +1,6 @@
+import functools
+import os
+
 from src.server.memory import *
 from src.server.utils.yaml_record import YamlRecord
 
@@ -18,7 +21,9 @@ class Agent(YamlRecord):
 
     @property
     def memory(self):
-        return globals()[self.memory_class](self.memory_file)
+        m = globals()[self.memory_class](self.memory_file)
+        m.load()
+        return m
 
     def __str__(self) -> str:
         return f"{self.id} - {self.name}: {self.goal} ({self.memory_file})"

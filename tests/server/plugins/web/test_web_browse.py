@@ -1,7 +1,9 @@
 import unittest
 from unittest import mock
-from unittest.mock import PropertyMock, patch
+from unittest.mock import PropertyMock, patch, MagicMock
 
+from src.server.agent.agent import Agent
+from src.server.config.config import Config
 from src.server.plugins.web.web_browse import WebBrowse
 
 
@@ -17,8 +19,11 @@ class TestWebBrowse(unittest.TestCase):
     @mock.patch("requests.get")
     def test_read(self, mock_read):
         mock_read.return_value.content = "test page content"
-        with mock.patch("src.server.plugins.web.web_browse.WebBrowse.memory",
-                        new_callable=PropertyMock()) as mock_memory:
+        with mock.patch.object(Agent, 'memory') as mock_agent:
+            mock_memory = MagicMock()
+            mock_agent.memory = mock_memory
+            config = Config()
+            config.active_agents = [mock_agent]
             result = self.web_browse.read("https://github.com/vilelaml/aipal")
             self.assertEqual(result, "Added page to my knowledge base")
             mock_memory.add.assert_called_once_with("test page content")
