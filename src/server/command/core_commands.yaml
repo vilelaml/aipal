@@ -8,3 +8,21 @@ ai_clients:
         - message
     - name: summarise
       function: summarise
+  - package: src.server.command.core.agent_activation
+    class: AgentActivation
+    commands:
+    - name: list_agents
+      function: list_agents
+    - name: list_active_agents
+      function: list_active_agents
+    - name: activate_agent
+      function: activate_agent
+      args: agent_id
+    - name: deactivate_agent
+      function: deactivate_agent
+      args: agent_id
+    - name: create_agent
+      function: create_agent
+      args:
+        - name
+        - goal

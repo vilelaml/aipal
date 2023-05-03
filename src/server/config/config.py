@@ -2,6 +2,7 @@ import importlib
 
 import yaml
 
+from src.server.agent.agent import Agent
 from src.server.singleton import AbstractSingleton
 from src.server.memory import *
 
@@ -10,6 +11,7 @@ class Config(AbstractSingleton):
     def __init__(self, config_file='aipal.yaml'):
         self.config_file = config_file
         self.commands = {}
+        self.active_agents = []
 
     @property
     def command_names(self):
@@ -26,17 +28,17 @@ class Config(AbstractSingleton):
         memory_file = self.config_yaml['memory']['file_name']
         return globals()[memory_class](memory_file)
 
-    def initialize(self):
+    def initialize(self) -> None:
         self.load_core_commands()
         self.load_plugins()
         self.memory.load()
 
-    def register_command(self, command, function):
+    def register_command(self, command, function) -> None:
         if command in self.commands:
             raise ValueError(f"{command} is already registered")
         self.commands[command] = function
 
-    def load_core_commands(self):
+    def load_core_commands(self) -> None:
         with open('command/core_commands.yaml', "r") as f:
             core_commands = yaml.safe_load(f)
 
@@ -47,13 +49,13 @@ class Config(AbstractSingleton):
                 plugin_object = getattr(plugin_module, plugin_class)()
                 self.register_command(command["name"], getattr(plugin_object, command["function"]))
 
-    def load_plugins(self, ):
+    def load_plugins(self) -> None:
         base_path = self.config_yaml['plugin']['base_path']
         for plugin in self.config_yaml['plugin']['plugins']:
             plugin_path = f"{base_path}/{plugin}/config.yaml"
             self.load_plugin_commands(plugin_path)
 
-    def load_plugin_commands(self, file_path):
+    def load_plugin_commands(self, file_path) -> None:
         with open(file_path, "r") as f:
             yaml_data = yaml.safe_load(f)
         plugin_module = importlib.import_module(yaml_data["package"])
@@ -61,3 +63,14 @@ class Config(AbstractSingleton):
         for command in yaml_data["commands"]:
             plugin_object = getattr(plugin_module, plugin_class)()
             self.register_command(command["name"], getattr(plugin_object, command["function"]))
+
+    def activate_agent(self, agent_id: int) -> None:
+        self.active_agents.append(Agent.get(agent_id))
+
+    def deactivate_agent(self, agent_id: int) -> None:
+        for idx, (id, name) in enumerate(self.list_active_agents().items()):
+            if id == agent_id:
+                self.active_agents.pop(idx)
+
+    def list_active_agents(self) -> dict[int, str]:
+        return {agent.id: agent.name for agent in self.active_agents}

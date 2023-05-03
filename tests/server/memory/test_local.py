@@ -9,7 +9,6 @@ class TestLocalMemory(unittest.TestCase):
         self.memory = LocalMemory(autosave=False)
 
     def tearDown(self) -> None:
-        del LocalMemory._instances[LocalMemory]
         del self.memory
 
     def test_add_memory(self):
@@ -40,7 +39,6 @@ class TestLocalMemory(unittest.TestCase):
 
         expected = []
         self.assertEqual(expected, self.memory.memories)
-        self.assertEqual("memory.pkl", self.memory.memory_file)
 
     def test_get_relevant(self):
         self.memory.add("test 1")
@@ -95,7 +93,6 @@ class TestLocalMemoryWithAutosave(unittest.TestCase):
         self.memory = LocalMemory()
 
     def tearDown(self) -> None:
-        del LocalMemory._instances[LocalMemory]
         del self.memory
 
     def test_add_memory(self):

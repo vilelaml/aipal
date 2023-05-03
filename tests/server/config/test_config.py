@@ -1,7 +1,7 @@
 import unittest
 from unittest import mock
-from unittest.mock import patch
 
+from src.server.agent.agent import Agent
 from src.server.config.config import Config
 
 
@@ -69,3 +69,30 @@ class TestConfig(unittest.TestCase):
         with mock.patch("builtins.open", mock.mock_open(read_data=mock_plugin_config)):
             self.config.load_plugin_commands('filepath')
         self.assertIn('confluence_search', self.config.commands)
+
+    def test_list_active_agents(self):
+        self.config.active_agents = [Agent(id=1, name="test", goal="first goal")]
+        expected = {1: "test"}
+        result = self.config.list_active_agents()
+        self.assertEqual(expected, result)
+
+    def test_list_active_agents_when_no_agents(self):
+        self.config.active_agents = []
+        expected = {}
+        result = self.config.list_active_agents()
+        self.assertEqual(expected, result)
+
+    def test_activate_agent(self):
+        self.config.active_agents = []
+        expected = [Agent(id=1, name="test")]
+        with mock.patch.object(Agent, 'get', return_value=Agent(id=1, name="test")):
+            self.config.activate_agent(1)
+        result = self.config.active_agents
+        self.assertEqual(expected, result)
+
+    def test_deactivate_agent(self):
+        self.config.active_agents = [Agent(id=1, name="test", goal="first goal")]
+        expected = []
+        self.config.deactivate_agent(1)
+        result = self.config.active_agents
+        self.assertEqual(expected, result)
