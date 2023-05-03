@@ -67,7 +67,7 @@ class Config(AbstractSingleton):
     def activate_agent(self, agent_id: int) -> None:
         self.active_agents.append(Agent.get(agent_id))
 
-    def deactivate_agent(self, agent_id) -> None:
+    def deactivate_agent(self, agent_id: int) -> None:
         for idx, (id, name) in enumerate(self.list_active_agents().items()):
             if id == agent_id:
                 self.active_agents.pop(idx)
